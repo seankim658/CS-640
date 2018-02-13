@@ -97,11 +97,12 @@ public class Iperfer {
         byte[] chunk = new byte[1000];
 
 
-        Socket c = new Socket(hostName, port);
+        Socket c = new Socket( );
+        InetSocketAddress remote = new InetSocketAddress( hostName, port );
 
-        try{
+        try {
 
-            client.connect(remote);
+            c.connect(remote);
 
 
             //calculate end time after connecting to server
@@ -109,7 +110,7 @@ public class Iperfer {
 
 
             while(System.nanoTime() < endTime){
-                c.getOutputStream.write(chunk);
+                c.getOutputStream().write(chunk);
                 dataSize += 1000;
             }
 
@@ -121,6 +122,9 @@ public class Iperfer {
 
             System.out.println("sent=" + dataSize + " KB rate=" + rate + " Mbps");
 
+        } catch( IOException e ) {
+        	System.out.println( "Error: IOException client" );
+        	System.exit( 1 );
         }
 	}
 	

@@ -1,4 +1,5 @@
 package p1;
+import java.io.IOException;
 import java.net.*;
 
 public class Iperfer {
@@ -14,7 +15,7 @@ public class Iperfer {
 		// variables needed for running Iperfer in client mode
 		boolean clientMode = false;
 		boolean hostNamePresent = false;
-		String hostName; 
+		String hostName = null; 
 		boolean portPresent = false;
 		int portNum = 0;
 		boolean timePresent = false;
@@ -96,13 +97,41 @@ public class Iperfer {
 	}
 	
 	// run in server mode
-	public static void serverMode( String[] args ) {
+	public static void serverMode( int portNum ) {
 		
-		// if too many arguments, print error and exit with status 1
-		if( args.length != 3 ) {
-			System.err.println( "Error: missing or additional arguments" );
+		// variables for tracking how much data was sent by the server and for how long did the client send data 
+		double dataReceived = 0;
+		double dataSpeed = 0;
+		long startTime = 0;
+		long endTime = 0;
+		double elapsedTime;
+		byte[] chunk = new byte[1000];
+		int readReturn = 0;
+		
+		try {
+			ServerSocket server = new ServerSocket();
+			InetSocketAddress address = new InetSocketAddress( portNum );
+			server.bind( address );
+			Socket client = server.accept();
+			startTime = System.currentTimeMillis();
+			while( readReturn > -1 ) {
+				readReturn = client.getInputStream().read( chunk, 0, 1000 );
+				if( readReturn >= 1) {
+					dataReceived = readReturn / 1000;
+				}
+			}
+			endTime = System.currentTimeMillis();
+			client.close();
+			server.close();
+			
+		} catch( IOException e ) {
+			System.out.println( "Error: IOException" );
 			System.exit( 1 );
 		}
+		
+		elapsedTime = ( endTime - startTime ) / 1000.0;
+		dataSpeed = ( ( dataReceived * 8 ) / 1000.0 ) / elapsedTime;
+		System.out.println( "received=" + dataReceived + " KB rate=" + dataSpeed + " Mbps" );
 		
 	}
 	

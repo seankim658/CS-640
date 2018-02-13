@@ -96,9 +96,7 @@ public class Iperfer {
         byte[] chunk = new byte[1000];
 
 
-        Socket c = new Socket();
-        InetSocketAddress remote = new InetSocketAddress(hostname, port);
-
+        Socket c = new Socket(hostName, port);
 
         try{
 

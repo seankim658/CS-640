@@ -5,20 +5,71 @@ public class Iperfer {
 	public static void main( String[] args ) {
 		
 		// if there are not enough arguments in, print error message and exit program with status 1
-		if( args.length < 3 ) {
+		if( args.length < 3 ) {	
 			System.err.println( "Error: missing or additional arguments" );
-			System.exit( 1 );
+			System.exit( 1 );			
 		}
 		
-		// check if server or client mode was called, if neither, print error message and exit with status 1
-		if( args[0].equals( "-c" ) ) {
-			clientMode( args );
-		} else if( args[0].equals( "-s" ) ) {
-			serverMode( args );
-		} else {
-			System.err.print( "Error: missing or additional arguments" );
-			System.exit( 1 );
+		// variables needed for running Iperfer in client mode
+		boolean clientMode = false;
+		boolean hostNamePresent = false;
+		String hostName; 
+		boolean portPresent = false;
+		int portNum = 0;
+		boolean timePresent = false;
+		int time = -1;
+		
+		// variable needed for running Iperfer in server mode 
+		boolean serverMode = false;
+		
+		// traverse through input to get correct mode and corresponding variables 
+		for( int i = 0; i < args.length; i++ ) {
+			
+			if( args[i].equals( "-c" ) ) {
+				clientMode = true;
+				
+			} else if( args[i].equals( "-s" ) ) {
+				serverMode = true;
+				
+			} else if( args[i].equals( "-h" ) ) {
+				hostNamePresent = true; 
+				hostName = args[i + 1];
+				
+			} else if( args[i].equals( "-p" ) ) {
+				portPresent = true;
+				
+				try {
+					portNum = Integer.parseInt( args[i + 1] );
+				} catch( NumberFormatException e ) {
+					System.out.println( "Error: port number must be in the range 1024 to 65535" );
+					System.exit( 1 );
+				}
+				
+				if( portNum < 1024 || portNum > 65535 ) {
+					System.out.println( "Error: port number must be in the range 1024 to 65535" );
+					System.exit( 1 );
+				}
+				
+			} else if( args[i].equals( "-t" ) ) {
+				timePresent = true;
+				
+				try {
+					time = Integer.parseInt( args[i + 1] );
+				} catch( NumberFormatException e ) {
+					System.out.println( "Error: missing or additional arguments" );
+					System.exit( 1 );
+				}
+				
+				if( time < 0 ) {
+					System.out.println( "Error: missing or additional arguments" );
+					System.exit( 1 );
+				}
+				
+			}
 		}
+		
+		// exits program normally
+		System.exit( 0 );
 		
 	}
 	

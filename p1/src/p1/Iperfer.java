@@ -92,8 +92,36 @@ public class Iperfer {
 	// run in client mode
 	public static void clientMode(String hostName, int port, int time) {
         double rate = 0.0;
-        
-		
+        long dataSize = 0;
+        long endTime = 0;
+        byte[] chunk = new byte[1000];
+
+
+        Socket c = new Socket(hostName, port);
+
+        try{
+
+            client.connect(remote);
+
+
+            //calculate end time after connecting to server
+            endTime = System.nanoTime() + (time * 1000000000);
+
+
+            while(System.nanoTime() < endTime){
+                c.getOutputStream.write(chunk);
+                dataSize += 1000;
+            }
+
+
+            c.close();
+
+            //calculate rate
+            rate = (((double)dataSize * 8.0/1000.0) / (double)time);
+
+            System.out.println("sent=" + dataSize + " KB rate=" + rate + " Mbps");
+
+        }
 	}
 	
 	// run in server mode

@@ -65,7 +65,21 @@ public class Iperfer {
 					System.exit( 1 );
 				}
 				
+			} else {
+				System.out.print( "Error: missing or additional arguments" );
+				System.exit( 1 );
+				
 			}
+		}
+		
+		// call client or server mode method based on input
+		if( clientMode && hostNamePresent && portPresent && timePresent ) {
+			clientMode( hostName, portNum, time );
+		} else if( serverMode && portPresent ) {
+			serverMode( portNum );
+		} else {
+			System.out.println( "Error: missing or additional arguments" );
+			System.exit( 1 );
 		}
 		
 		// exits program normally

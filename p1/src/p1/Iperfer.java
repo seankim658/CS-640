@@ -153,9 +153,10 @@ public class Iperfer {
             while (readReturn > -1) {
                 readReturn = client.getInputStream().read(chunk, 0, 1000);
                 if (readReturn >= 1) {
-                    dataReceived = readReturn / 1000;
+                    dataReceived += readReturn / 1000;
                 }
             }
+            
             endTime = System.currentTimeMillis();
             client.close();
             server.close();
@@ -166,6 +167,7 @@ public class Iperfer {
         }
 
         elapsedTime = (endTime - startTime) / 1000.0;
+
         dataSpeed = ((dataReceived * 8) / 1000.0) / elapsedTime;
         System.out.println("received=" + dataReceived + " KB rate=" + dataSpeed + " Mbps");
 

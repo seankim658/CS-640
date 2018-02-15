@@ -113,7 +113,8 @@ public class Iperfer {
 
 
             while (System.currentTimeMillis() < endTime) {
-                c.getOutputStream().write(chunk);
+                c.getOutputStream().write(chunk, 0 , 1000);
+                //c.getOutputStream().flush();
                 dataSize += 1;
             }
 
@@ -132,7 +133,7 @@ public class Iperfer {
     public static void serverMode(int portNum) {
 
         // variables for tracking how much data was sent by the server and for how long did the client send data
-        double dataReceived = 0;
+        long dataReceived = 0;
         double dataSpeed = 0;
         long startTime = 0;
         long endTime = 0;
@@ -149,8 +150,9 @@ public class Iperfer {
             startTime = System.currentTimeMillis();
             while (readReturn > -1) {
                 readReturn = client.getInputStream().read(chunk);
-                if (readReturn >= 1) {
-                    dataReceived += 1;
+             //   System.out.println(readReturn);
+                if (readReturn  >0) {
+                    dataReceived += readReturn;
                 }
             }
 
@@ -165,7 +167,7 @@ public class Iperfer {
 
         elapsedTime = (endTime - startTime) / 1000.0;
 
-        dataSpeed = ((dataReceived * 8) / 1000.0) / elapsedTime;
+        dataSpeed = (( ( dataReceived / 1000.0 ) * 8.0) / 1000.0) / elapsedTime;
         System.out.println("received=" + dataReceived + " KB rate=" + dataSpeed + " Mbps");
 
     }

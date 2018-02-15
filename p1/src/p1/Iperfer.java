@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.io.*;
 import java.net.*;
 
 public class Iperfer {
@@ -94,32 +95,27 @@ public class Iperfer {
     }
 
     // run in client mode
-    public static void clientMode(String hostName, int port, int time) {
+    public static void clientMode(String hostName, int portNumber, int time) {
         double rate = 0.0;
         long dataSize = 0;
         long endTime = 0;
         byte[] chunk = new byte[1000];
 
 
-        Socket c = new Socket();
-        InetSocketAddress remote = new InetSocketAddress(hostName, port);
+//        Socket c = new Socket();
+//        InetSocketAddress remote = new InetSocketAddress(hostName, port);
 
-        try {
-
-            c.connect(remote);
-            System.out.println("Error: Connect");
+        try (Socket c = new Socket(hostName, portNumber);)
+        {
 
             //calculate end time after connecting to server
-            endTime = System.nanoTime() + (time * 1000000000);
+            endTime = System.currentTimeMillis() + (time * 1000);
 
 
-            while (System.nanoTime() < endTime) {
+            while (System.currentTimeMillis() < endTime) {
                 c.getOutputStream().write(chunk);
-                dataSize += 1000;
+                dataSize += 1;
             }
-
-
-            c.close();
 
             //calculate rate
             rate = (((double) dataSize * 8.0 / 1000.0) / (double) time);
@@ -144,19 +140,20 @@ public class Iperfer {
         byte[] chunk = new byte[1000];
         int readReturn = 0;
 
-        try {
-            ServerSocket server = new ServerSocket();
-            InetSocketAddress address = new InetSocketAddress(portNum);
-            server.bind(address);
+        try (ServerSocket server = new ServerSocket(portNum);)
+        {
+//            ServerSocket server = new ServerSocket();
+//            InetSocketAddress address = new InetSocketAddress(portNum);
+//            server.bind(address);
             Socket client = server.accept();
             startTime = System.currentTimeMillis();
             while (readReturn > -1) {
-                readReturn = client.getInputStream().read(chunk, 0, 1000);
+                readReturn = client.getInputStream().read(chunk);
                 if (readReturn >= 1) {
-                    dataReceived += readReturn / 1000;
+                    dataReceived += 1;
                 }
             }
-            
+
             endTime = System.currentTimeMillis();
             client.close();
             server.close();

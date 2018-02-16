@@ -63,6 +63,9 @@ public class Iperfer {
                 } catch (NumberFormatException e) {
                     System.out.println("Error: missing or additional arguments");
                     System.exit(1);
+                } catch (ArrayIndexOutOfBoundsException a) {
+                    System.out.println("Error: missing or additional arguments");
+                    System.exit(1);
                 }
 
                 if (time < 0) {
@@ -96,32 +99,24 @@ public class Iperfer {
 
     // run in client mode
     public static void clientMode(String hostName, int portNumber, int time) {
-        double rate = 0.0;
-        long dataSize = 0;
-        long endTime = 0;
         byte[] chunk = new byte[1000];
 
+        long dataSize = 0;
+        long endTime = 0;
 
-//        Socket c = new Socket();
-//        InetSocketAddress remote = new InetSocketAddress(hostName, port);
 
-        try (Socket c = new Socket(hostName, portNumber);)
-        {
+        try (Socket c = new Socket(hostName, portNumber);) {
 
             //calculate end time after connecting to server
             endTime = System.currentTimeMillis() + (time * 1000);
 
 
-            while (System.currentTimeMillis() < endTime) {
-                c.getOutputStream().write(chunk, 0 , 1000);
-                //c.getOutputStream().flush();
+            while (endTime > System.currentTimeMillis()) {
+                c.getOutputStream().write(chunk, 0, 1000);
                 dataSize += 1;
             }
 
-            //calculate rate
-            rate = (((double) dataSize * 8.0 / 1000.0) / (double) time);
-
-            System.out.println("sent=" + dataSize + " KB rate=" + rate + " Mbps");
+            System.out.println("sent=" + dataSize + " KB rate=" + (((double) dataSize * 8.0 / 1000.0) / (double) time) + " Mbps");
 
         } catch (IOException e) {
             System.out.println("Error: IOException client");
@@ -134,40 +129,45 @@ public class Iperfer {
 
         // variables for tracking how much data was sent by the server and for how long did the client send data
         long dataReceived = 0;
-        double dataSpeed = 0;
         long startTime = 0;
         long endTime = 0;
-        double elapsedTime;
-        byte[] chunk = new byte[1000];
+
         int readReturn = 0;
 
-        try (ServerSocket server = new ServerSocket(portNum);)
-        {
-//            ServerSocket server = new ServerSocket();
-//            InetSocketAddress address = new InetSocketAddress(portNum);
-//            server.bind(address);
-            Socket client = server.accept();
+        double dataSpeed = 0;
+
+        byte[] chunk = new byte[1000];
+
+
+        try (
+                ServerSocket server = new ServerSocket(portNum);
+                Socket client = server.accept();
+        ) {
+
+
             startTime = System.currentTimeMillis();
+
             while (readReturn > -1) {
                 readReturn = client.getInputStream().read(chunk);
-             //   System.out.println(readReturn);
-                if (readReturn  >0) {
+                if (readReturn > 0) {
                     dataReceived += readReturn;
                 }
             }
 
             endTime = System.currentTimeMillis();
-            client.close();
-            server.close();
 
         } catch (IOException e) {
             System.out.println("Error: IOException");
             System.exit(1);
         }
 
-        elapsedTime = (endTime - startTime) / 1000.0;
 
-        dataSpeed = (( ( dataReceived / 1000.0 ) * 8.0) / 1000.0) / elapsedTime;
+        //Calculate values for output
+        dataReceived = dataReceived / 1000;
+
+        dataSpeed = ((dataReceived * 8.0) / 1000.0) / ((endTime - startTime) / 1000.0);
+
+
         System.out.println("received=" + dataReceived + " KB rate=" + dataSpeed + " Mbps");
 
     }
